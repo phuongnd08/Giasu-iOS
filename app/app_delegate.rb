@@ -1,8 +1,6 @@
 class AppDelegate
   attr_accessor :fbSession
 
-  ::FBSessionStateChangedNotification = "#{App.identifier}:FBSessionStateChangedNotification"
-
   def fbSession
     @fbSession ||= FBSession.alloc.init
   end
@@ -22,7 +20,19 @@ class AppDelegate
   def application(application, didFinishLaunchingWithOptions:launchOptions)
     window.rootViewController = navController
     window.makeKeyAndVisible
+    setUpDefaultRequestHeader
     true
+  end
+
+  DEFAULT_PATH = "http://localhost:3000/api/"
+
+  def setUpDefaultRequestHeader
+    AFMotion::Client.build_shared(DEFAULT_PATH) do
+      header "Accept", "application/json"
+      header "X-Giasu-App-Key", "ios"
+      header "X-Giasu-App-Secret", "erhy2ks81SQjWAdKkQGN"
+      operation :json
+    end
   end
 
   def applicationDidBecomeActive(application)

@@ -73,24 +73,22 @@ class LoginController < UIViewController
     NSLog("\nUpdate Logined View")
   end
 
-  DEFAULT_PATH = "http://localhost:3000/api/"
-
   def signinWithServer
-    AFMotion::Client.build_shared(DEFAULT_PATH) do
-      header "Accept", "application/json"
-      header "X-Giasu-App-Key", "ios"
-      header "X-Giasu-App-Secret", "erhy2ks81SQjWAdKkQGN"
-      operation :json
-    end
-
     AFMotion::Client.shared.post("authentication/sign_in", provider: "facebook", oauth_token: appDelegate.fbSession.accessTokenData.accessToken) do |result|
       NSLog("\n Sign in, post a request")
       if result.success?
         p result.object
+        saveUser(result.object)
       elsif result.failure?
         p "FAIL.........."
         p result.operation.responseJSON
       end
     end
+  end
+
+  def saveUser(user_json)
+    @user = User.create(user_json)
+    p @user.inspect
+    App::Persistence['current_user'] = @user.id
   end
 end
