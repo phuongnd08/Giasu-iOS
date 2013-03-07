@@ -40,11 +40,11 @@ class AppDelegate
   end
 
   def applicationDidBecomeActive(application)
-    FBSession.activeSession.handleDidBecomeActive
+    fbSession.handleDidBecomeActive
   end
 
   def applicationWillTerminate(application)
-    FBSession.activeSession.close
+    fbSession.close
   end
 
   # If we have a valid session at the time of openURL call, we handle
@@ -53,12 +53,12 @@ class AppDelegate
   # Returns a Boolean value
   def application(application, openURL: url, sourceApplication: sourceApplication, annotation: annotation)
     # attempt to extract a token from the url
-    @fbSession.handleOpenURL(url)
+    fbSession.handleOpenURL(url)
   end
 
   # Close the Facebook session when done
   def closeSession
-    FBSession.activeSession.closeAndClearTokenInformation
+    fbSession.closeAndClearTokenInformation
   end
 
 end

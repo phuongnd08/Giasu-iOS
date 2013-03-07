@@ -16,8 +16,10 @@ class LoginController < UIViewController
     completionBlock = Proc.new do |session, state, error|
       NSLog('reload fb token') unless error
     end
-    if appDelegate.fbSession.state == FBSessionStateCreatedTokenLoaded
+
+    if FBSessionStateCreatedTokenLoaded == appDelegate.fbSession.state
       appDelegate.fbSession.openWithCompletionHandler(completionBlock)
+      authButton.setTitle("Log out", forState: UIControlStateNormal)
     end
   end
 
