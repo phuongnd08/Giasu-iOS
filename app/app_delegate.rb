@@ -31,6 +31,10 @@ class AppDelegate
       header "Accept", "application/json"
       header "X-Giasu-App-Key", "ios"
       header "X-Giasu-App-Secret", "erhy2ks81SQjWAdKkQGN"
+      if(user_id = App::Persistence['current_user_id'])
+        user = User.where(:id).eq(user_id).first
+        header "X-Giasu-User-Token", user.token if user
+      end
       operation :json
     end
   end

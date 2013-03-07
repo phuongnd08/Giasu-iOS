@@ -1,5 +1,6 @@
 class LoginController < UIViewController
   def viewDidLoad
+    super
     self.title = "Login"
     self.view.backgroundColor = UIColor.whiteColor
     view.addSubview(textLabel)
@@ -78,7 +79,9 @@ class LoginController < UIViewController
       NSLog("\n Sign in, post a request")
       if result.success?
         p result.object
+        presentCardLearningController
         saveUser(result.object)
+        fetchCardListings
       elsif result.failure?
         p "FAIL.........."
         p result.operation.responseJSON
@@ -89,6 +92,21 @@ class LoginController < UIViewController
   def saveUser(user_json)
     @user = User.create(user_json)
     p @user.inspect
-    App::Persistence['current_user'] = @user.id
+    App::Persistence['current_user_id'] = @user.id
+    appDelegate.setUpDefaultRequestHeader
+  end
+
+  LIMIT = 10
+
+  def fetchCardListings
+    MemoCardManager.memoCardShared.fetchListCards(LIMIT)
+  end
+
+  def cardLearningController
+    @cardLearningController ||= CardLearningController.alloc.init
+  end
+
+  def presentCardLearningController
+    self.navigationController.pushViewController(cardLearningController, animated:TRUE)
   end
 end
