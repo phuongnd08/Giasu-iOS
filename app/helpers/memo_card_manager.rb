@@ -1,6 +1,7 @@
 class MemoCardManager
   def self.memoCardShared
-    @memoCard ||= MemoCardManager.new
+    Dispatch.once { @instance ||= new }
+    @instance
   end
 
   def fetchListCards(limit)
