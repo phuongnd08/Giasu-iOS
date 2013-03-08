@@ -1,18 +1,13 @@
 class MemoCardManager
-  def self.memoCardShared
-    Dispatch.once { @instance ||= new }
-    @instance
+  attr_accessor :cards
+
+  def self.instance
+    @instance ||= new
   end
 
-  def fetchListCards(limit)
-    AFMotion::Client.shared.post("memo_cards/list", limit: limit) do |result|
-      NSLog("\n get list memo cards")
-      if result.success?
-        p result.object
-      elsif result.failure?
-        p "FAIL.........."
-        p result.operation.responseJSON
-      end
+  def fetchCards(limit)
+    HTTPClient.post("memo_cards/list", { limit: limit }) do |success, result|
+      @cards = result if success
     end
   end
 end

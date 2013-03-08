@@ -14,7 +14,11 @@ class LoginController < UIViewController
 
   def initFBSession
     completionBlock = Proc.new do |session, state, error|
-      NSLog('reload fb token') unless error
+      if error
+        p 'reload fb token unsuccessfully'
+      else
+        p 'reload fb token successfully'
+      end
     end
 
     if FBSessionStateCreatedTokenLoaded == appDelegate.fbSession.state
@@ -47,7 +51,7 @@ class LoginController < UIViewController
     if appDelegate.fbSession.open?
       appDelegate.fbSession.closeAndClearTokenInformation
       authButton.setTitle("Login with Facebook", forState: UIControlStateNormal)
-      NSLog("Logged out")
+      p "Logged out"
     else
       loginWithFacebook
     end
@@ -56,8 +60,7 @@ class LoginController < UIViewController
   def loginWithFacebook
     completionBlock = Proc.new do |session, state, error|
       if error.nil?
-        NSLog('login with fb, create new token')
-        updateLoginedView
+        updateLoggedInView
         signinWithServer
       end
     end
@@ -71,37 +74,31 @@ class LoginController < UIViewController
     end
   end
 
-  def updateLoginedView
+  def updateLoggedInView
     authButton.setTitle("Log out", forState: UIControlStateNormal)
-    NSLog("\nUpdate Logined View")
   end
 
   def signinWithServer
-    AFMotion::Client.shared.post("authentication/sign_in", provider: "facebook", oauth_token: appDelegate.fbSession.accessTokenData.accessToken) do |result|
-      NSLog("\n Sign in, post a request")
-      if result.success?
-        p result.object
+    HTTPClient.post("authentication/sign_in", { provider: "facebook", oauth_token: appDelegate.fbSession.accessTokenData.accessToken }) do |success, result|
+      if success
+        p result
         presentCardLearningController
-        saveUser(result.object)
-        fetchCardListings
-      elsif result.failure?
-        p "FAIL.........."
-        p result.operation.responseJSON
+        storeUser(result)
+        fetchCards
       end
     end
   end
 
-  def saveUser(user_json)
+  def storeUser(user_json)
     @user = User.create(user_json)
-    p @user.inspect
     App::Persistence['current_user_id'] = @user.id
     appDelegate.setUpDefaultRequestHeader
   end
 
   LIMIT = 10
 
-  def fetchCardListings
-    MemoCardManager.memoCardShared.fetchListCards(LIMIT)
+  def fetchCards
+    MemoCardManager.instance.fetchCards(LIMIT)
   end
 
   def cardLearningController
