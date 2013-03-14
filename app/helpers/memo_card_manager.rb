@@ -5,9 +5,17 @@ class MemoCardManager
     @instance ||= new
   end
 
+  def appDelegate
+    UIApplication.sharedApplication.delegate
+  end
+
   def fetchCards(limit)
     HTTPClient.post("memo_cards/list", { limit: limit }) do |success, result|
-      @cards = result if success
+      p result[:cards]
+      if success
+        @cards = result[:cards]
+        appDelegate.navController.topViewController.presentCardLearningController
+      end
     end
   end
 end

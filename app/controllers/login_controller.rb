@@ -82,7 +82,6 @@ class LoginController < UIViewController
     HTTPClient.post("authentication/sign_in", { provider: "facebook", oauth_token: appDelegate.fbSession.accessTokenData.accessToken }) do |success, result|
       if success
         p result
-        presentCardLearningController
         storeUser(result)
         fetchCards
       end
