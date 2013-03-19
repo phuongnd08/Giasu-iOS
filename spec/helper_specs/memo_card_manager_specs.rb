@@ -3,12 +3,12 @@ describe "MemoCardManager" do
     @success_response = { cards: 'many cards' }
   end
 
-  describe "fetch cards" do
+  describe "#fetch cards" do
     before do
       MemoCardManager.instance.cards = nil
     end
 
-    describe "with response successfully" do
+    describe "populates cards field" do
       it "get card listings json" do
         cards = @success_response
         HTTPClient.stub!(:post) do |path, paramters, &block|

@@ -16,12 +16,17 @@ class CardLearningController < UIViewController
     when 'card'
       card_view
     end
-    collection_card_view
   end
 
   def collection_card_view
-    collection = CollectionView.alloc.initWithFrame([[50, 200], [220, 140]])
-    collection.card = @card
-    collection
+    collection_view = CollectionView.alloc.initWithFrame([[50, 50], [220, 140]])
+    collection_view.card = @card
+    collection_view
+  end
+
+  def vocabulary_card_view
+    vocabulary_view = VocabularyView.alloc.initWithFrame([[50, 50], [220, 140]])
+    vocabulary_view.card = @card
+    vocabulary_view
   end
 end

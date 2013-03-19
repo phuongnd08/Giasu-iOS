@@ -94,10 +94,10 @@ class LoginController < UIViewController
     appDelegate.setUpDefaultRequestHeader
   end
 
-  LIMIT = 10
+  CARDS_PER_BATCH_LIMIT = 10
 
   def fetchCards
-    MemoCardManager.instance.fetchCards(LIMIT)
+    MemoCardManager.instance.fetchCards(CARDS_PER_BATCH_LIMIT)
   end
 
   def cardLearningController
