@@ -105,6 +105,6 @@ class LoginController < UIViewController
   end
 
   def presentCardLearningController
-    self.navigationController.pushViewController(cardLearningController, animated:TRUE)
+    self.navigationController.pushViewController(cardLearningController, animated: true)
   end
 end

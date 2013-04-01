@@ -18,4 +18,10 @@ class MemoCardManager
       end
     end
   end
+
+  def pop
+    first_element = @cards.first.dup
+    @cards = @cards[1..@cards.length]
+    first_element
+  end
 end
