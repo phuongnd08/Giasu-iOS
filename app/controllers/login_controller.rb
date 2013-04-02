@@ -1,5 +1,6 @@
 class LoginController < UIViewController
   def viewDidLoad
+    super
     self.title = "Login"
     self.view.backgroundColor = UIColor.whiteColor
     view.addSubview(textLabel)
@@ -13,10 +14,16 @@ class LoginController < UIViewController
 
   def initFBSession
     completionBlock = Proc.new do |session, state, error|
-      NSLog('reload fb token') unless error
+      if error
+        p 'reload fb token unsuccessfully'
+      else
+        p 'reload fb token successfully'
+      end
     end
-    if appDelegate.fbSession.state == FBSessionStateCreatedTokenLoaded
+
+    if FBSessionStateCreatedTokenLoaded == appDelegate.fbSession.state
       appDelegate.fbSession.openWithCompletionHandler(completionBlock)
+      authButton.setTitle("Log out", forState: UIControlStateNormal)
     end
   end
 
@@ -44,7 +51,7 @@ class LoginController < UIViewController
     if appDelegate.fbSession.open?
       appDelegate.fbSession.closeAndClearTokenInformation
       authButton.setTitle("Login with Facebook", forState: UIControlStateNormal)
-      NSLog("Logged out")
+      p "Logged out"
     else
       loginWithFacebook
     end
@@ -53,8 +60,7 @@ class LoginController < UIViewController
   def loginWithFacebook
     completionBlock = Proc.new do |session, state, error|
       if error.nil?
-        NSLog('login with fb, create new token')
-        updateLoginedView
+        updateLoggedInView
         signinWithServer
       end
     end
@@ -68,29 +74,37 @@ class LoginController < UIViewController
     end
   end
 
-  def updateLoginedView
+  def updateLoggedInView
     authButton.setTitle("Log out", forState: UIControlStateNormal)
-    NSLog("\nUpdate Logined View")
   end
 
-  DEFAULT_PATH = "http://localhost:3000/api/"
-
   def signinWithServer
-    AFMotion::Client.build_shared(DEFAULT_PATH) do
-      header "Accept", "application/json"
-      header "X-Giasu-App-Key", "ios"
-      header "X-Giasu-App-Secret", "erhy2ks81SQjWAdKkQGN"
-      operation :json
-    end
-
-    AFMotion::Client.shared.post("authentication/sign_in", provider: "facebook", oauth_token: appDelegate.fbSession.accessTokenData.accessToken) do |result|
-      NSLog("\n Sign in, post a request")
-      if result.success?
-        p result.object
-      elsif result.failure?
-        p "FAIL.........."
-        p result.operation.responseJSON
+    HTTPClient.post("authentication/sign_in", { provider: "facebook", oauth_token: appDelegate.fbSession.accessTokenData.accessToken }) do |success, result|
+      if success
+        p result
+        storeUser(result)
+        fetchCards
       end
     end
+  end
+
+  def storeUser(user_json)
+    @user = User.create(user_json)
+    App::Persistence['current_user_id'] = @user.id
+    appDelegate.setUpDefaultRequestHeader
+  end
+
+  CARDS_PER_BATCH_LIMIT = 10
+
+  def fetchCards
+    MemoCardManager.instance.fetchCards(CARDS_PER_BATCH_LIMIT)
+  end
+
+  def cardLearningController
+    @cardLearningController ||= CardLearningController.alloc.init
+  end
+
+  def presentCardLearningController
+    self.navigationController.pushViewController(cardLearningController, animated: true)
   end
 end
