@@ -21,22 +21,22 @@ class SegmentView < UIView
     if @data[:text]
       if match_data = @data[:text].match(url_regex)
         p "url match: #{match_data.to_s}"
-        self.addSubview(url_view(match_data.to_s))
+        self.addSubview(urlView(match_data.to_s))
         content = @data[:text].gsub(match_data.to_s, '').strip
-        self.addSubview(text_label(content, [[0, 40], [420, 40]]))
+        self.addSubview(textLabel(content, [[0, 40], [420, 40]]))
       else
-        self.addSubview(text_label(@data[:text], [[0, 0], [420, 40]]))
+        self.addSubview(textLabel(@data[:text], [[0, 0], [420, 40]]))
       end
     end
   end
 
   def initInputUI
-    self.addSubview(text_label(@data[:hint], [[0, 0], [220, 40]]))
-    self.addSubview(answer_view)
+    self.addSubview(textLabel(@data[:hint], [[0, 0], [220, 40]]))
+    self.addSubview(answerView)
     self.tag = 300
   end
 
-  def answer_view
+  def answerView
     @answerTextfield = UITextField.alloc.initWithFrame([[0, 40], [220, 40]])
     @answerTextfield.backgroundColor = UIColor.grayColor
     @answerTextfield.textColor = UIColor.blueColor
@@ -44,14 +44,14 @@ class SegmentView < UIView
     @answerTextfield
   end
 
-  def check_answer
+  def checkAnswer
     p @answerTextfield.text
     p @data[:answer]
     return true if @answerTextfield.text.downcase.strip == @data[:answer]
     false
   end
 
-  def url_view(url)
+  def urlView(url)
     if url.match(/\.jpg$/)
       imageView = UIImageView.alloc.initWithFrame([[0, 0], [220, 40]])
       imageView.image = UIImage.alloc.initWithData(NSData.alloc.initWithContentsOfURL(NSURL.URLWithString(url)))
@@ -64,7 +64,7 @@ class SegmentView < UIView
     end
   end
 
-  def text_label(content, frame)
+  def textLabel(content, frame)
     textLabel = UILabel.alloc.initWithFrame(frame)
     textLabel.text = content
     textLabel.textColor = UIColor.blueColor

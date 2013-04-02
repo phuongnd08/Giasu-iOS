@@ -3,17 +3,17 @@ class CollectionView < UIView
 
   def card=(c)
     @card = c
-    self.addSubview(name_label)
-    self.addSubview(description_label)
+    self.addSubview(nameLabel)
+    self.addSubview(descriptionLabel)
   end
 
-  def name_label
+  def nameLabel
     _nameLabel = UILabel.alloc.initWithFrame([[0, 0], [220, 40]])
     _nameLabel.text = @card[:name]
     _nameLabel
   end
 
-  def description_label
+  def descriptionLabel
     _descriptionLabel= UILabel.alloc.initWithFrame([[0, 45], [220, 40]])
     _descriptionLabel.text = @card[:description] || "No description"
     _descriptionLabel

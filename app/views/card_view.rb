@@ -17,10 +17,10 @@ class CardView < UIView
       chain[:segments].each_with_index do |segment, segment_idx|
         p "SEGMENTTTTTTTTTTTT"
         p segment
-        segment_view = SegmentView.alloc.initWithFrame([[0, chain_idx * 110 + segment_idx * 110], [220, 100]])
-        p segment_view.frame
-        segment_view.data = segment
-        self.addSubview(segment_view)
+        _segment_view = SegmentView.alloc.initWithFrame([[0, chain_idx * 110 + segment_idx * 110], [220, 100]])
+        p _segment_view.frame
+        _segment_view.data = segment
+        self.addSubview(_segment_view)
       end
     end
   end

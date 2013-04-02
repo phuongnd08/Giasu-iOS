@@ -3,56 +3,56 @@ class CardLearningController < UIViewController
     super
     self.title = "Learning"
     view.backgroundColor = UIColor.whiteColor
-    add_learning_view
+    addLearningView
     self.navigationItem.hidesBackButton = true
-    self.navigationItem.rightBarButtonItem = done_button
+    self.navigationItem.rightBarButtonItem = doneButton
   end
 
-  def done_button
+  def doneButton
     UIBarButtonItem.alloc.initWithBarButtonSystemItem(UIBarButtonSystemItemDone, target: self, action: 'doneAction')
   end
 
-  def add_learning_view
-    @learning_view = learning_view
+  def addLearningView
+    @learning_view = learningView
     view.addSubview(@learning_view)
   end
 
   def doneAction
-    answer_view = @learning_view.viewWithTag(300)
-    if answer_view.check_answer
+    _answer_view = @learning_view.viewWithTag(300)
+    if _answer_view.checkAnswer
       p 'right answer'
       @learning_view = nil
-      add_learning_view
+      addLearningView
     else
       p 'wrong answer'
     end
   end
 
-  def learning_view
+  def learningView
     @card = MemoCardManager.instance.pop
     case @card['type']
     when 'collection'
-      collection_card_view
+      collectionCardView
     when 'vocabulary'
-      vocabulary_card_view
+      vocabularyCardView
     when 'card'
-      card_view
+      cardView
     end
   end
 
-  def collection_card_view
+  def collectionCardView
     @collection_view ||= CollectionView.alloc.initWithFrame([[50, 50], [220, 140]])
     @collection_view.card = @card
     @collection_view
   end
 
-  def vocabulary_card_view
+  def vocabularyCardView
     @vocabulary_view ||= VocabularyView.alloc.initWithFrame([[50, 50], [220, 140]])
     @vocabulary_view.card = @card
     @vocabulary_view
   end
 
-  def card_view
+  def cardView
     @card_view ||= CardView.alloc.initWithFrame([[0, 0], [220, 800]])
     @card_view.card = @card
     @card_view
