@@ -15,16 +15,27 @@ class CardLearningController < UIViewController
   def addLearningView
     @learning_view = learningView
     view.addSubview(@learning_view)
+    @beginTime = Time.now
   end
 
   def doneAction
+    answerQuestion
+    @learning_view = nil
+    addLearningView
+  end
+
+  def answerQuestion
     _answer_view = @learning_view.viewWithTag(300)
-    if _answer_view.checkAnswer
-      p 'right answer'
-      @learning_view = nil
-      addLearningView
-    else
-      p 'wrong answer'
+    _delta_time = Time.now - @beginTime
+    _params = { question_id: @card[:question_id],
+                value: _answer_view.answerText,
+                within: _delta_time
+    }
+    HTTPClient.post('memo_cards/answer', _params) do |success, result|
+      p result
+      if success
+        p 'SUCCESS POST ANSWER'
+      end
     end
   end
 

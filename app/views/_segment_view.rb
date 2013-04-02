@@ -44,11 +44,8 @@ class SegmentView < UIView
     @answerTextfield
   end
 
-  def checkAnswer
-    p @answerTextfield.text
-    p @data[:answer]
-    return true if @answerTextfield.text.downcase.strip == @data[:answer]
-    false
+  def answerText
+    @answerTextfield.text
   end
 
   def urlView(url)
@@ -57,9 +54,10 @@ class SegmentView < UIView
       imageView.image = UIImage.alloc.initWithData(NSData.alloc.initWithContentsOfURL(NSURL.URLWithString(url)))
       imageView
     else
-      mp3Button = UIButton.alloc.buttonWithType(UIButtonTypeRoundedRect)
+      mp3Button = UIButton.buttonWithType(UIButtonTypeRoundedRect)
       mp3Button.frame = [[0, 0], [220, 40]]
-      mp3Button.addTarget(self, action: "mp3ButtonAction", forControlEvents:UIControlEventTouchUp)
+      mp3Button.addTarget(self, action: "mp3ButtonAction", forControlEvents:UIControlEventTouchUpInside)
+      @mp3URL = url.chomp(':')
       mp3Button
     end
   end
@@ -75,6 +73,10 @@ class SegmentView < UIView
 
   def mp3ButtonAction
     p "mp3 player"
+    p @mp3URL
+    BW::Media.play(@mp3URL, { modal: false }) do |media_player|
+      p media_player
+    end
   end
 end
 
