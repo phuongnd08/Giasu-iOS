@@ -30,7 +30,7 @@ class AppDelegate
     AFMotion::Client.build_shared(DEFAULT_PATH) do
       header "Accept", "application/json"
       header "X-Giasu-App-Key", "ios"
-      header "X-Giasu-App-Secret", "erhy2ks81SQjWAdKkQGN"
+      header "X-Giasu-App-Secret", "ios-development-secret"
       header "X-Giasu-User-Token", User.where(:id).eq(App::Persistence['current_user_id']).try(:first).try(:token)
       operation :json
     end
