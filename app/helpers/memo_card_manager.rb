@@ -20,8 +20,11 @@ class MemoCardManager
   end
 
   def pop
-    first_element = @cards.first.dup
-    @cards = @cards[1..@cards.length]
-    first_element
+    if @cards.first
+      first_element = @cards.first.dup
+      @cards = @cards[1..@cards.length]
+      return first_element
+    end
+    nil
   end
 end

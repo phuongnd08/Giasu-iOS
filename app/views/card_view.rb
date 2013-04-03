@@ -5,13 +5,17 @@ class CardView < UIView
     p "set card in carview"
     @card = c
     p @card
-    @chains = @card[:structure][:chains]
-    addUIComponents
+    if @card[:question_data_type] == 'fill-in-the-blanks'
+      addFillInBlankUIComponents
+    elsif @card[:question_data_type] == 'multiple-choices'
+      addMultipleChoicesUIComponents
+    end
   end
 
-  def addUIComponents
+  def addFillInBlankUIComponents
+    _chains = @card[:structure][:chains]
     self.subviews.map { |view| view.removeFromSuperview }
-    @chains.each_with_index do |chain, chain_idx|
+    _chains.each_with_index do |chain, chain_idx|
       p "CHAINNNNNNNN"
       p chain
       chain[:segments].each_with_index do |segment, segment_idx|
@@ -23,6 +27,42 @@ class CardView < UIView
         self.addSubview(_segment_view)
       end
     end
+  end
+
+  def addMultipleChoicesUIComponents
+    self.subviews.map { |view| view.removeFromSuperview }
+    _topic = @card[:structure][:topic]
+    p _topic
+    url_regex = /https?:\/\/[\S]+/
+    if image_url = _topic.match(url_regex)
+      p "image_url: #{image_url}"
+      self.addSubview(imageView(image_url.to_s))
+      self.addSubview(labelTopicView(_topic.gsub(image_url.to_s, '').strip))
+    else
+      self.addSubview(labelTopicView(_topic))
+    end
+    self.addSubview(addMultipleChoicesView)
+  end
+
+  def imageView(url)
+    _imageView = UIImageView.alloc.initWithFrame([[0, 0], [220, 40]])
+    _imageView.image = UIImage.alloc.initWithData(NSData.alloc.initWithContentsOfURL(NSURL.URLWithString(url)))
+    _imageView
+  end
+
+  def labelTopicView(topic)
+    _textLabel = UILabel.alloc.initWithFrame([[0, 40], [420, 40]])
+    _textLabel.text = topic
+    _textLabel.textColor = UIColor.blueColor
+    _textLabel
+
+  end
+
+  def addMultipleChoicesView
+    _mcView = MultipleChoicesView.alloc.initWithFrame([[0, 80], [220, 120]])
+    _mcView.data = @card[:structure][:options]
+    _mcView.data
+    _mcView
   end
 end
 

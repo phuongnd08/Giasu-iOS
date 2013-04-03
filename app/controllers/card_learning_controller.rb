@@ -26,29 +26,43 @@ class CardLearningController < UIViewController
 
   def answerQuestion
     _answer_view = @learning_view.viewWithTag(300)
-    _delta_time = Time.now - @beginTime
-    _params = { question_id: @card[:question_id],
-                value: _answer_view.answerText,
-                within: _delta_time
-    }
-    HTTPClient.post('memo_cards/answer', _params) do |success, result|
-      p result
-      if success
-        p 'SUCCESS POST ANSWER'
+    if _answer_view
+      _delta_time = Time.now - @beginTime
+      _params = { question_id: @card[:question_id],
+                  value: [_answer_view.answerText].flatten,
+                  within: _delta_time
+                }
+      HTTPClient.post('memo_cards/answer', _params) do |success, result|
+        p result
+        if success
+          p 'SUCCESS POST ANSWER'
+        end
       end
     end
   end
 
   def learningView
     @card = MemoCardManager.instance.pop
-    case @card['type']
-    when 'collection'
-      collectionCardView
-    when 'vocabulary'
-      vocabularyCardView
-    when 'card'
-      cardView
+    if @card
+      case @card['type']
+      when 'collection'
+        collectionCardView
+      when 'vocabulary'
+        vocabularyCardView
+      when 'card'
+        cardView
+      end
+    else
+      finishLearning
     end
+  end
+
+  def finishLearning
+    view.endEditing(true)
+    _alert = UIAlertView.alloc.init
+    _alert.message = 'Great work'
+    _alert.addButtonWithTitle 'OK'
+    _alert.show
   end
 
   def collectionCardView
